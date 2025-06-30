@@ -12,7 +12,9 @@ import { AlbumsModule } from './albums/albums.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({isGlobal:true}),
+    ConfigModule.forRoot({
+      isGlobal:true //making it accessible everywhere
+    }),
     MongooseModule.forRoot(process.env.MONGO_URI!),
     UsersModule,
     AuthModule,

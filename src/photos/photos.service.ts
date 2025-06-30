@@ -24,6 +24,7 @@ export class PhotosService {
       width: result.width,
       height: result.height,
       size: result.bytes,
+      format:result.format
     });
     return photo.save();
   }
@@ -49,7 +50,39 @@ export class PhotosService {
         size: photo.size || 'Unknown',
         width: photo.width || 'Unknown',
         height: photo.height || 'Unknown',
+        format:photo.format || "Unknown"
       },
     };
+  }
+
+  async searchPhotos(query:any,userId:string){
+    const {
+      minWidth,
+    maxWidth,
+    minHeight,
+    maxHeight,
+    dateFrom,
+    dateTo,
+    search,
+    } = query
+
+    const filter: any = { user: userId };
+
+    if (minWidth) filter.width = { ...filter.width, $gte: Number(minWidth) };
+    if (maxWidth) filter.width = { ...filter.width, $lte: Number(maxWidth) };
+
+  if (minHeight) filter.height = { ...filter.height, $gte: Number(minHeight) };
+  if (maxHeight) filter.height = { ...filter.height, $lte: Number(maxHeight) };
+
+  if (dateFrom || dateTo) {
+    filter.createdAt = {};
+    if (dateFrom) filter.createdAt.$gte = new Date(dateFrom);
+    if (dateTo) filter.createdAt.$lte = new Date(dateTo);
+  }
+  if(search){
+    filter.format  = {$regex:search, $options:'i'};
+  }
+    return this.photoModel.find(filter).sort({ createdAt: -1 }).lean();
+
   }
 }

@@ -1,4 +1,4 @@
-import { Controller,Post,Get,UseInterceptors,UploadedFile,UseGuards,Req, Param} from '@nestjs/common';
+import { Controller,Post,Get,UseInterceptors,UploadedFile,UseGuards,Req, Param, Query} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PhotosService } from './photos.service';
@@ -23,6 +23,15 @@ export class PhotosController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('search')
+    async searchPhotos(
+        @Query() query:any,
+        @Req() req:any
+    ){
+        return this.photosService.searchPhotos(query,req.user.userId)
+    }
+
+     @UseGuards(JwtAuthGuard)
     @Get(':photoId')
     async getSinglePhoto(@Param('photoId') photoId:string, @Req() req:any){
         return this.photosService.getPhotoById(photoId,req.user.userId);

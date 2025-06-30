@@ -33,7 +33,26 @@ export class AlbumsService {
     }
 
     async getAlbumsByUser(userId:string){
-        return this.albumModel.find({user:userId}).sort({createdAt:-1}).lean()
+        const albums =  await this.albumModel.find({user:userId}).lean()
+
+        const enhancedAlbums = await Promise.all(
+            albums.map(async(album)=>{
+                let coverUrl: string | null =null;
+
+                if(album.photos.length > 0){
+                    const firstPhoto = await this.photoModel.findById(album.photos[0]).lean();
+                    if(firstPhoto){
+                        coverUrl  = firstPhoto.url;
+                    }
+                }
+                return{
+                    ...album,
+                    coverUrl
+                }
+            })
+        )
+        return enhancedAlbums
+
     }
 
     async getPhotosInAlbum(albumId:string,userId:string){

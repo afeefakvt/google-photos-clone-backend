@@ -23,6 +23,9 @@ export class Photo {
     @Prop()
     size:number
 
+    @Prop()
+    format:string
+
     @Prop() createdAt?: Date;
     @Prop() updatedAt?: Date;
 }
